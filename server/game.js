@@ -418,25 +418,29 @@ function settleUp(players) {
   return transfers;
 }
 
+// Who pays whom if the session stopped right now. Whatever is left in the pot
+// goes back to the people who paid into it before the debts are netted out.
+function computeSettlement(room) {
+  const refunds = proportionalSplit(room.pot, room.potContrib);
+  const finals = room.players.map((p) => ({ id: p.id, balance: p.balance + (refunds[p.id] || 0) }));
+  return {
+    refunds,
+    balances: Object.fromEntries(finals.map((p) => [p.id, p.balance])),
+    transfers: settleUp(finals),
+  };
+}
+
 function endGame(room, byId) {
   requireHost(room, byId);
   if (room.status !== 'playing') fail('The game is not running');
-  // Whatever is left in the pot goes back to the people who paid into it.
-  const refunds = proportionalSplit(room.pot, room.potContrib);
-  for (const [id, amt] of Object.entries(refunds)) {
-    const p = getPlayer(room, id);
-    if (p) p.balance += amt;
-  }
+  const settlement = computeSettlement(room);
+  for (const p of room.players) p.balance = settlement.balances[p.id];
   if (room.pot > 0) log(room, `Leftover pot of ${money(room, room.pot)} returned to the players who paid in`);
   room.pot = 0;
   room.potContrib = {};
   room.status = 'ended';
   room.turn = null;
-  room.settlement = {
-    refunds,
-    balances: Object.fromEntries(room.players.map((p) => [p.id, p.balance])),
-    transfers: settleUp(room.players),
-  };
+  room.settlement = settlement;
   log(room, 'Session ended — time to settle up');
 }
 
@@ -471,6 +475,8 @@ function publicView(room, connectedIds = new Set()) {
     lastHand: room.lastHand,
     betLimits: betLimits(room),
     settlement: room.settlement,
+    // Live "who pays who" while playing; the final one once the session ends.
+    payout: room.status === 'ended' ? room.settlement : room.status === 'playing' ? computeSettlement(room) : null,
     log: room.log.slice(-30),
     players: room.players.map((p) => ({
       id: p.id,
@@ -509,6 +515,7 @@ module.exports = {
   claimHost,
   proportionalSplit,
   settleUp,
+  computeSettlement,
   endGame,
   newSession,
   publicView,

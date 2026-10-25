@@ -229,3 +229,17 @@ test('publicView hides secrets and the deck', () => {
   assert.equal(view.deck, undefined);
   assert.equal(view.deckCount, 52);
 });
+
+test('live payout matches the final settle-up and changes nothing', () => {
+  const room = setup(3);
+  stack(room, '2S', 'KH', '7C');
+  game.dealPosts(room, 'p0');
+  game.placeBet(room, 'p0', { amount: 20 });
+  const before = JSON.stringify(room);
+  const live = game.computeSettlement(room);
+  assert.equal(JSON.stringify(room), before);
+  assert.deepEqual(game.publicView(room).payout, live);
+  game.endGame(room, 'p0');
+  assert.deepEqual(room.settlement.transfers, live.transfers);
+  assert.deepEqual(game.publicView(room).payout, room.settlement);
+});

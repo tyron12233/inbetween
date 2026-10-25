@@ -15,7 +15,8 @@ A multiplayer In-Between (Acey-Deucey) table for your phones. Everyone joins wit
    - Aces are always low.
    - Bets must fall within the host's min/max and can never exceed the pot.
 5. When someone empties the pot, everyone re-antes automatically.
-6. The host taps **Ledger → End session & settle up**. Whatever is left in the pot goes back to the players in proportion to what they put in. The app then lists who pays whom, using as few transfers as possible.
+6. A **Who pays who** panel on the table shows, after every hand, exactly who would pay whom and how much if you stopped now. Your own line is highlighted, with a summary like "You pay ₱130 in total".
+7. The host taps **Ledger → End session & settle up** to lock it in. Whatever is left in the pot goes back to the players in proportion to what they put in. The app then lists who pays whom, using as few transfers as possible.
 
 ### Other things you can do
 

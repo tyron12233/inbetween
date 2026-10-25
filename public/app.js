@@ -247,6 +247,11 @@
       </div>
       ${boardView(live, revealing)}
       <div class="actions">${actionsView(live, revealing)}</div>
+      ${live.status === 'playing' ? `<section class="panel" style="margin-bottom:12px">
+        <h3>Who pays who</h3>
+        <div class="small muted" style="margin-bottom:8px">If you stopped now, counting everyone's share of the pot coming back. Updates after every hand.</div>
+        ${payoutView(s)}
+      </section>` : ''}
       <section class="panel">
         <h3>Players</h3>
         <ul class="players">${playersView(s, live)}</ul>
@@ -322,7 +327,7 @@
 
     if (s.status === 'ended') {
       return `<div class="status"><div class="headline">Session over</div><div class="sub">Hand over the cash and you're square.</div></div>
-        ${settlementView(s)}
+        ${payoutView(s)}
         ${isHost(s) ? '<button class="big" data-act="new" style="margin-top:12px">Start a new session</button>' : ''}`;
     }
 
@@ -413,12 +418,22 @@
     }).join('') || '<li class="muted">Nobody yet</li>';
   }
 
-  function settlementView(s) {
-    const st = s.settlement;
+  // "X pays Y ₱N" lines, with your own lines highlighted and a one-line summary for you.
+  function payoutView(s) {
+    const st = s.payout;
     if (!st) return '';
-    if (!st.transfers.length) return '<div class="center muted">Everyone broke even. Nobody owes anything.</div>';
-    return `<ul class="transfers">${st.transfers.map((t) => `
-      <li><b>${esc(nameOf(t.from, s))}</b><span class="arrow">pays</span><b>${esc(nameOf(t.to, s))}</b><span class="amt">${fmt(t.amount)}</span></li>`).join('')}
+    if (!st.transfers.length) return '<div class="center muted">Everyone is even. Nobody owes anything.</div>';
+    const mine = identity.playerId;
+    const who = (id) => (id === mine ? 'You' : esc(nameOf(id, s)));
+    const pays = st.transfers.filter((t) => t.from === mine);
+    const gets = st.transfers.filter((t) => t.to === mine);
+    let summary = '';
+    if (pays.length) summary = `You pay <b>${fmt(pays.reduce((a, t) => a + t.amount, 0))}</b> in total`;
+    else if (gets.length) summary = `You collect <b>${fmt(gets.reduce((a, t) => a + t.amount, 0))}</b> in total`;
+    else if (me(s)) summary = "You're even — you don't pay or collect";
+    return `${summary ? `<div class="you-line">${summary}</div>` : ''}
+      <ul class="transfers">${st.transfers.map((t) => `
+      <li class="${t.from === mine || t.to === mine ? 'mine' : ''}"><b>${who(t.from)}</b><span class="arrow">${t.from === mine ? 'pay' : 'pays'}</span><b>${t.to === mine ? 'you' : esc(nameOf(t.to, s))}</b><span class="amt">${fmt(t.amount)}</span></li>`).join('')}
     </ul>`;
   }
 
@@ -452,8 +467,8 @@
           <li><span class="name">${esc(p.name)}</span><span class="bal ${p.balance > 0 ? 'pos' : p.balance < 0 ? 'neg' : ''}">${signed(p.balance)}</span></li>`).join('')}
           ${pending ? `<li class="muted"><span class="name">In the pot</span><span class="bal">${fmt(pending)}</span></li>` : ''}
         </ul>
-        ${s.status === 'ended' ? `<h3 style="margin-top:16px">Settle up</h3>${settlementView(s)}` : ''}
-        ${s.status === 'playing' ? `<p class="small muted">When you end the session, the leftover pot goes back to whoever paid into it, then we work out who pays whom.</p>` : ''}
+        ${s.payout ? `<h3 style="margin-top:16px">${s.status === 'ended' ? 'Settle up' : 'Who pays who (if you stopped now)'}</h3>${payoutView(s)}` : ''}
+        ${s.status === 'playing' ? `<p class="small muted">The leftover pot goes back to whoever paid into it, so this list already includes it.</p>` : ''}
         ${s.status === 'playing' && isHost(s) ? '<button class="danger big" data-act="end">End session &amp; settle up</button>' : ''}
       `;
     } else if (ui.modal === 'settings') {

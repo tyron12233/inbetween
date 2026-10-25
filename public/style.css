@@ -219,6 +219,8 @@ input[type=range] { padding: 0; accent-color: var(--gold); background: none; bor
 .transfers li + li { margin-top: 6px; }
 .transfers .arrow { color: var(--muted); flex: 0 0 auto; }
 .transfers .amt { margin-left: auto; font-family: var(--pixel); color: var(--gold); font-size: 18px; }
+.transfers li.mine { background: rgba(242, 193, 78, 0.14); border: 1px solid rgba(242, 193, 78, 0.45); }
+.you-line { text-align: center; font-size: 15px; margin-bottom: 10px; }
 
 /* ---------- modal ---------- */
 .backdrop {
