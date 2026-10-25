@@ -1,0 +1,4 @@
+Card art: "FREE Pixel Art Playing Cards" by KereneL
+https://kerenel.itch.io/pixelart-cards
+License: Creative Commons Zero v1.0 Universal (CC0 1.0)
+Files were renamed to <rank><suit>.png (e.g. 10H.png, QS.png) from the pack's separated sprites.
