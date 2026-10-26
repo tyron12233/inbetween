@@ -24,6 +24,7 @@ A multiplayer In-Between (Acey-Deucey) table for your phones. Everyone joins wit
 - **Sit out** for a while. Sitting back in during a game costs one ante. People who join mid-game sit out until they ante in.
 - The host can **skip** an AFK player, sit people out, change settings, hand off host, or remove people with a zero balance.
 - If the host drops off, anyone can **take over as host**.
+- **Sound effects** for dealing, flips, bets, wins, losses and post hits. Tap 🔊 to mute (remembered per phone). On iPhone, the ring/silent switch also silences them.
 - Your seat is remembered on your device. Reloading or reopening the link puts you back with the same balance.
 
 ## Run it
@@ -53,3 +54,5 @@ Rooms are saved to `data/rooms.json` (set `DATA_DIR` to move it), so restarting 
 ## Credits
 
 Card art: [FREE Pixel Art Playing Cards](https://kerenel.itch.io/pixelart-cards) by KereneL, CC0. See `public/cards/LICENSE.txt`.
+
+Sound effects: [Casino Audio](https://kenney.nl/assets/casino-audio) and [Music Jingles](https://kenney.nl/assets/music-jingles) by Kenney, CC0. See `public/sounds/LICENSE.txt`.

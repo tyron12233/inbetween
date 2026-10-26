@@ -1,0 +1,8 @@
+Sound effects by Kenney (www.kenney.nl), CC0 1.0 (public domain):
+- "Casino Audio" — https://kenney.nl/assets/casino-audio
+  deal-1 (card-place-1), deal-2 (card-place-2), flip (card-slide-1), pass (card-shove-1),
+  bet (chip-lay-1), ante (chip-lay-3), collect (chips-collide-1), chips (chips-stack-1),
+  shuffle (card-shuffle, trimmed to 1.6s)
+- "Music Jingles" — https://kenney.nl/assets/music-jingles
+  win (NES09), lose (NES10), post (NES11), jackpot (NES12), your-turn (NES01), end (NES00)
+Converted from .ogg to mono 64 kbps .mp3 so they play on every phone.

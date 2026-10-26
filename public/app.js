@@ -115,10 +115,63 @@
     if (posts && posts !== ui.dealKey) { ui.dealKey = posts; ui.dealAt = Date.now(); }
     const wasMyTurn = old && isMyTurn(old);
     ui.state = state;
+    playSounds(old, state);
     if (!wasMyTurn && isMyTurn(state) && navigator.vibrate) navigator.vibrate(60);
     if (ui.bet === null || state.turn?.playerId !== old?.turn?.playerId) ui.bet = state.betLimits.min;
     render();
   });
+
+  // Work out what just happened from the change in state, so every phone at the
+  // table hears the same thing. Timings line up with the deal and flip animations.
+  function playSounds(old, s) {
+    if (!old || old.code !== s.code) return;
+    const hand = s.lastHand;
+    const newHand = hand && hand.id !== old.lastHand?.id;
+    const started = old.status !== 'playing' && s.status === 'playing';
+    let wait = 0;
+
+    if (started) {
+      Sfx.play('shuffle');
+      Sfx.play('chips', 900);
+      wait = 1400;
+    } else if (s.status === 'playing' && s.shuffles > old.shuffles) {
+      Sfx.play('shuffle');
+      wait = 900;
+    }
+    if (old.status === 'playing' && s.status === 'ended') Sfx.play('end');
+
+    if (newHand) {
+      Sfx.play('bet');
+      Sfx.play('flip', 500);
+      if (hand.outcome === 'win') {
+        // Taking the whole pot gets the big fanfare, then everyone re-antes.
+        const cleaned = hand.delta === old.pot;
+        Sfx.play(cleaned ? 'jackpot' : 'win', 1100);
+        Sfx.play('collect', 1100);
+        if (cleaned) Sfx.play('chips', 2000);
+      } else {
+        Sfx.play(hand.outcome === 'post' ? 'post' : 'lose', 1100);
+      }
+      wait = REVEAL_MS + 200;
+    } else if (old.turn?.phase === 'decide' && s.turn?.playerId !== old.turn.playerId && s.status === 'playing') {
+      Sfx.play('pass');
+    }
+
+    const posts = s.turn?.phase === 'decide' ? s.turn.posts.join(',') : '';
+    if (posts && posts !== (old.turn?.phase === 'decide' ? old.turn.posts.join(',') : '')) {
+      Sfx.play('deal-1', wait);
+      Sfx.play('deal-2', wait + 120);
+    }
+
+    if (!started && s.status === 'playing') {
+      for (const p of s.players) {
+        const before = old.players.find((x) => x.id === p.id);
+        if (before?.sittingOut && !p.sittingOut) Sfx.play('ante');
+      }
+    }
+
+    if (!isMyTurn(old) && isMyTurn(s) && s.turn.phase === 'deal') Sfx.play('your-turn', wait);
+  }
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -234,6 +287,7 @@
         <button class="code-btn" data-act="share" title="Share room link">${esc(live.code)}</button>
         <span class="spacer"></span>
         ${socket.connected ? '' : '<span class="small neg">offline</span>'}
+        <button class="icon" data-act="mute" aria-label="${Sfx.isMuted() ? 'Turn sound on' : 'Mute sound'}">${Sfx.isMuted() ? '🔇' : '🔊'}</button>
         <button class="icon" data-act="modal" data-modal="ledger">Ledger</button>
         ${isHost(live) ? '<button class="icon" data-act="modal" data-modal="settings">Settings</button>' : ''}
         <button class="icon" data-act="modal" data-modal="me">${esc(meNow?.name || 'Me')}</button>
@@ -539,6 +593,12 @@
       case 'close-modal': if (e.target === el) { ui.modal = null; render(); } break;
       case 'player': ui.modal = { player: el.dataset.id }; render(); break;
       case 'toggle-log': ui.showLog = !ui.showLog; render(); break;
+      case 'mute':
+        Sfx.setMuted(!Sfx.isMuted());
+        if (!Sfx.isMuted()) Sfx.play('bet');
+        toast(Sfx.isMuted() ? 'Sound off' : 'Sound on');
+        render();
+        break;
       case 'start': await send('game:start'); break;
       case 'deal': await send('turn:deal'); break;
       case 'pass': await send('turn:pass'); break;
