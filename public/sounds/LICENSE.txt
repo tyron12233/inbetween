@@ -3,6 +3,10 @@ Sound effects by Kenney (www.kenney.nl), CC0 1.0 (public domain):
   deal-1 (card-place-1), deal-2 (card-place-2), flip (card-slide-1), pass (card-shove-1),
   bet (chip-lay-1), ante (chip-lay-3), collect (chips-collide-1), chips (chips-stack-1),
   shuffle (card-shuffle, trimmed to 1.6s)
+- "RPG Audio" — https://kenney.nl/assets/rpg-audio
+  win (handleCoins2), jackpot (handleCoins mixed with confirmation_001 below)
+- "Interface Sounds" — https://kenney.nl/assets/interface-sounds
+  jackpot (confirmation_001), your-turn (glass_001)
 - "Music Jingles" — https://kenney.nl/assets/music-jingles
-  win (NES09), lose (NES10), post (NES11), jackpot (NES12), your-turn (NES01), end (NES00)
+  lose (SAX01), post (STEEL01), end (SAX03)
 Converted from .ogg to mono 64 kbps .mp3 so they play on every phone.

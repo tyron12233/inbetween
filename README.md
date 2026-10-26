@@ -55,4 +55,4 @@ Rooms are saved to `data/rooms.json` (set `DATA_DIR` to move it), so restarting 
 
 Card art: [FREE Pixel Art Playing Cards](https://kerenel.itch.io/pixelart-cards) by KereneL, CC0. See `public/cards/LICENSE.txt`.
 
-Sound effects: [Casino Audio](https://kenney.nl/assets/casino-audio) and [Music Jingles](https://kenney.nl/assets/music-jingles) by Kenney, CC0. See `public/sounds/LICENSE.txt`.
+Sound effects: [Casino Audio](https://kenney.nl/assets/casino-audio), [RPG Audio](https://kenney.nl/assets/rpg-audio), [Interface Sounds](https://kenney.nl/assets/interface-sounds) and [Music Jingles](https://kenney.nl/assets/music-jingles) by Kenney, CC0. See `public/sounds/LICENSE.txt`.

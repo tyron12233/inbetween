@@ -5,7 +5,7 @@ window.Sfx = (() => {
     'deal-1', 'deal-2', 'flip', 'pass', 'bet', 'ante', 'collect', 'chips', 'shuffle',
     'win', 'lose', 'post', 'jackpot', 'your-turn', 'end',
   ];
-  const VOLUME = { win: 0.6, lose: 0.6, post: 0.6, jackpot: 0.7, 'your-turn': 0.5, end: 0.6 };
+  const VOLUME = { 'your-turn': 0.5, end: 0.6 };
   const buffers = {};
   let ctx = null;
   let muted = false;
